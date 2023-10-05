@@ -8,20 +8,4 @@ on:
 jobs:
   ci:
     name: CI
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Checkout code
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
-
-      - name: Install PHP
-        uses: shivammathur/setup-php@1a18b2267f80291a81ca1d33e7c851fe09e7dfc4 # v2.22.0
-        with:
-          php-version: 7.4
-          tools: composer
-
-      - name: Composer install
-        run: composer install --no-plugins --no-scripts --no-progress --prefer-dist
-
-      - name: PHPUnit
-        run: vendor/bin/phpunit --verbose --colors=always
+    uses: silverstripe/gha-ci/.github/workflows/ci.yml@v1
