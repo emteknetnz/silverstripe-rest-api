@@ -1,0 +1,6 @@
+---
+Name: restapi-extensions
+---
+SilverStripe\Control\Director:
+  extensions:
+    - App\Extensions\DirectorExtension

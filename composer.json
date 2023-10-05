@@ -1,0 +1,26 @@
+{
+    "name": "emteknetnz/silverstripe-rest-api",
+    "type": "silverstripe-vendormodule",
+    "description": "Rest API for Silverstripe",
+    "license": "MIT",
+    "keywords": [
+        "silverstripe",
+        "rest"
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "silverstripe/framework": "^4.13 || ^5.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6",
+        "silverstripe/versioned": "^1.13 || ^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "emteknetnz\\RestApi\\": "src/",
+            "emteknetnz\\RestApi\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
