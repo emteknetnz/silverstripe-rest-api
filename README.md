@@ -69,7 +69,6 @@ class MySiteTreeEndpoint extends RestApiEndpoint
         ],
     ];
 }
-
 ```
 
 Run `https://mysite.test/dev/build?flush=1`
@@ -356,10 +355,11 @@ For instance the following javascript code will make a `GET` request that includ
 
 ```js
 fetch(
-    '/api/teams',
-    headers: {'X-CSRF-TOKEN': window.ss.config['SecurityID']}
+    '/api/pages',
+    { headers: { 'X-CSRF-TOKEN': window.ss.config.SecurityID } }
 )
-    .then(response => console.log(response.json()))
+    .then(response => response.json())
+    .then(responseJson => console.log(responseJson));
 ```
 
 ## Extension hooks<a name="readme-extension-hooks"></a>
@@ -400,6 +400,7 @@ class MySiteTreeEndpoint extends RestApiEndpoint
 ```
 
 Notes:
+
 - If your extension hook updates the DataObject or another DataObject then it is likely you should use a different extension hook such as `onAfterWrite()` on the Dataobject itself rather than on the endpoint. This is because it usually shouldn't matter whether the object was created/updated/deleted via the API or a different way. These hooks are intended to facilitate the implementation of API specific code such as logging operations done via the API.
 - For the `onView*()` hooks if you are adding extra data to the JSON for the response, remember to call `canView()` for any DataObjects being added as required.
 - For the `onEdit*Write()` hooks you may find it useful to get the fields changed in the operations with `$obj->getChangedFields()`.
