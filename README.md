@@ -368,22 +368,24 @@ You may need to add custom logic to your API which can do with using the followi
 
 For example the following implementation of the `onEditBeforeWrite()` hook will update the `Content` field of a DataObject updated via a `PATCH` request before saving, even though the `Content` field is not exposed in the API.
 
+Note to run this code example you need to be logged in to the CMS to use and pass an `X-CSRF-TOKEN` header when making requests.
+
 **src/MySiteTreeEndpoint.php**
 
 ```php
 <?php
 
-use emteknetnz\RestApi\RestApiEndpoint;
+use emteknetnz\RestApi\Controllers\RestApiEndpoint;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\ORM\DataObject;
 
 class MySiteTreeEndpoint extends RestApiEndpoint
 {
     private static array $api_config = [
-        RestApiEndpoint::PATH = 'api/pages';
+        RestApiEndpoint::PATH => 'api/pages',
         RestApiEndpoint::DATA_CLASS => SiteTree::class,
         RestApiEndpoint::ACCESS => RestApiEndpoint::LOGGED_IN,
-        RestApiEndpoint::ALLOWED_OPERATIONS => RestApiEndpoint::VIEW_CREATE_EDIT_DELETE,
+        RestApiEndpoint::ALLOWED_OPERATIONS => RestApiEndpoint::VIEW_CREATE_EDIT_DELETE_ACTION,
         RestApiEndpoint::FIELDS => [
             'title' => 'Title',
         ],
