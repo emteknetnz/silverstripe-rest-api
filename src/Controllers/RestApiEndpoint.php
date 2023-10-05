@@ -260,6 +260,7 @@ abstract class RestApiEndpoint extends Controller
         $response = $this->getResponse();
         $response->setStatusCode(204);
         $response->addHeader('Allow', $this->allowedOptions());
+        $response->setBody('');
         return $response;
     }
 
@@ -953,7 +954,7 @@ abstract class RestApiEndpoint extends Controller
             // https://www.rfc-editor.org/rfc/rfc7232#section-2.3
             $etag = $response->getHeader('ETag');
             if (!$etag) {
-                $etag = sprintf('"%s"', md5($response->getBody() ?? ''));
+                $etag = sprintf('"%s"', md5($body));
                 $response->addHeader('ETag', $etag);
             }
         }

@@ -2228,14 +2228,17 @@ class RestApiEndpointTest extends FunctionalTest
     {
         $this->setConfig(self::CALL_CAN_METHODS, self::NONE);
         // double quotes inside single quotes are intentional
-        $expected = '"d41d8cd98f00b204e9800998ecf8427e"';
+        $expectedViewOperation = '"6cd52dbfaf406fcece186c5a9004e677"';
+        $expectedBlankBody = '"d41d8cd98f00b204e9800998ecf8427e"';
         $taskID = TestTask::get()->first()->ID;
-        $this->assertSame($expected, $this->req('GET', $taskID)->getHeader('ETag'));
-        $this->assertSame($expected, $this->req('HEAD', $taskID)->getHeader('ETag'));
+        $this->assertSame($expectedViewOperation, $this->req('GET', $taskID)->getHeader('ETag'));
+        $this->assertSame($expectedViewOperation, $this->req('HEAD', $taskID)->getHeader('ETag'));
         $this->assertSame(null, $this->req('POST')->getHeader('ETag'));
         $this->assertSame(null, $this->req('PATCH', $taskID, null, null, ['title' => 'changed'])->getHeader('ETag'));
         $this->assertSame(null, $this->req('DELETE', $taskID)->getHeader('ETag'));
-        $this->assertSame(null, $this->req('OPTIONS')->getHeader('ETag'));
+        $this->assertSame(null, $this->req('PUT')->getHeader('ETag'));
+        // OPTIONS gets an etag added by ChangeDetectionMiddleware
+        $this->assertSame($expectedBlankBody, $this->req('OPTIONS')->getHeader('ETag'));
     }
 
     public function testExtensionHooks(): void

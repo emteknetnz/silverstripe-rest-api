@@ -52,13 +52,13 @@ This assumes that you have an existing project created with `silverstripe/cms` i
 ```php
 <?php
 
-use emteknetnz\RestApi\RestApiEndpoint;
+use emteknetnz\RestApi\Controllers\RestApiEndpoint;
 use SilverStripe\CMS\Model\SiteTree;
 
 class MySiteTreeEndpoint extends RestApiEndpoint
 {
     private static array $api_config = [
-        RestApiEndpoint::PATH = 'api/pages';
+        RestApiEndpoint::PATH => 'api/pages',
         RestApiEndpoint::DATA_CLASS => SiteTree::class,
         RestApiEndpoint::ACCESS => RestApiEndpoint::PUBLIC,
         RestApiEndpoint::FIELDS => [
@@ -69,6 +69,7 @@ class MySiteTreeEndpoint extends RestApiEndpoint
         ],
     ];
 }
+
 ```
 
 Run `https://mysite.test/dev/build?flush=1`
