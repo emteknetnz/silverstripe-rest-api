@@ -2,7 +2,7 @@
 
 namespace emteknetnz\RestApi\Tests\Controllers\RestApiTest;
 
-use App\Controllers\RestApiEndpoint;
+use emteknetnz\RestApi\Controllers\RestApiEndpoint;
 use emteknetnz\RestApi\Tests\Controllers\RestApiEndpointTest;
 use SilverStripe\Dev\TestOnly;
 

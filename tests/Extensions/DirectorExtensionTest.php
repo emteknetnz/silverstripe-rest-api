@@ -1,8 +1,8 @@
 <?php
 
 use SilverStripe\Dev\SapphireTest;
-use App\Extensions\DirectorExtension;
-use App\Controllers\RestApiEndpoint;
+use emteknetnz\RestApi\Extensions\DirectorExtension;
+use emteknetnz\RestApi\Controllers\RestApiEndpoint;
 use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestApiEndpoint;
 use SilverStripe\Core\Config\Config;
 

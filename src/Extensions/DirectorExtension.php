@@ -2,7 +2,7 @@
 
 namespace emteknetnz\RestApi\Extensions;
 
-use App\Controllers\RestApiEndpoint;
+use emteknetnz\RestApi\Controllers\RestApiEndpoint;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;

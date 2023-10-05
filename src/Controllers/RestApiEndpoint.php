@@ -2,7 +2,7 @@
 
 namespace emteknetnz\RestApi\Controllers;
 
-use App\Exceptions\RestApiEndpointException;
+use emteknetnz\RestApi\Exceptions\RestApiEndpointException;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPResponse;
 use Exception;
@@ -13,7 +13,7 @@ use SilverStripe\ORM\DataList;
 use SilverStripe\Control\Director;
 use SilverStripe\Security\Permission;
 use stdClass;
-use App\Exceptions\RestApiEndpointConfigException;
+use emteknetnz\RestApi\Exceptions\RestApiEndpointConfigException;
 use SilverStripe\ORM\DataObjectSchema;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\SecurityToken;

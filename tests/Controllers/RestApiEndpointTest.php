@@ -2,7 +2,7 @@
 
 namespace emteknetnz\RestApi\Tests\Controllers;
 
-use App\Controllers\RestApiEndpoint;
+use emteknetnz\RestApi\Controllers\RestApiEndpoint;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\Control\Director;
@@ -15,7 +15,7 @@ use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestProject;
 use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestReporter;
 use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestTeam;
 use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestCanMethodStatic;
-use App\Exceptions\RestApiEndpointConfigException;
+use emteknetnz\RestApi\Exceptions\RestApiEndpointConfigException;
 use SilverStripe\Security\SecurityToken;
 
 # vendor/bin/phpunit app/tests/Controllers/RestApiTest.php flush=1
@@ -23,7 +23,7 @@ use SilverStripe\Security\SecurityToken;
 class RestApiEndpointTest extends FunctionalTest
 {
     // Duplicating RestApi constants because they're not available within dataProviders only because for whatever
-    // reason we get this error `Error: Class 'App\Controllers\RestApi' not found`
+    // reason we get this error `Error: Class 'emteknetnz\RestApi\Controllers\RestApi' not found`
     // there is a unit test to valiate that these consts match those on RestApi
     // NOTE: these should also never change since this would be an API breaking change for downstream projects
     // keys
