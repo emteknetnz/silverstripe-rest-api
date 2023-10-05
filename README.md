@@ -14,6 +14,7 @@ Also a common gotcha, if your dataobject isn't showing in the JSON response then
 
 ### Contents:
 
+- [Installation](#readme-quickstart)
 - [Quickstart](#readme-quickstart)
 - [Querying data](#readme-querying-data)
   - [Filtering](#readme-filtering)
@@ -33,6 +34,12 @@ Also a common gotcha, if your dataobject isn't showing in the JSON response then
 - [Individual fields](#readme-individual-fields)
 - [CSRF token](#readme-csrf-token)
 - [Extension hooks](#readme-extension-hooks)
+
+## Installation<a name="readme-installation"></a>
+
+`composer require emteknetnz/silverstripe-rest-api`
+
+Works on both Silverstripe CMS 4 and 5.
 
 ## Quickstart<a name="readme-quickstart"></a>
 
