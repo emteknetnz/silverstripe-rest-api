@@ -72,11 +72,14 @@ abstract class RestApiEndpoint extends Controller
                 $code = Security::getCurrentUser() ? 403 : 401;
                 throw new RestApiEndpointException('', $code);
             }
-            // Set stage to draft - this is necessary otherwise <Dataobject>_Live tables
-            // will get updated straight away in tandom with the draft tables
-            // (only tested on SiteTree when not-logged-in on API with all security config turned off)
+            // If the endpoint is non-public i.e. an admin only endpoint, set it to read and write draft content
+            // Not doing this will result is strange behaviour e.g. calling DataObject::write() will update
+            // both the draft and live tables
             if (class_exists(Versioned::class)) {
-                Versioned::set_stage(Versioned::DRAFT);
+                $access = $this->endpointConfig(self::ACCESS, true);
+                if ($access !== self::PUBLIC) {
+                    Versioned::set_stage(Versioned::DRAFT);
+                }
             }
             $requestHttpMethod = $this->requestHttpMethod();
             $this->checkHttpRequestMethodAllowed($requestHttpMethod);
@@ -173,7 +176,7 @@ abstract class RestApiEndpoint extends Controller
             return false;
         }
         // CSRF-Token check only on non-subSchemaAccess aka root level
-        if ($subSchemaAccess === '') {
+        if (SecurityToken::is_enabled() && $subSchemaAccess === '') {
             $token = $this->getRequest()->getHeader('X-CSRF-TOKEN');
             if (!$token) {
                 throw new RestApiEndpointException('Missing X-CSRF-TOKEN header', 400);
