@@ -2326,9 +2326,9 @@ class RestApiEndpointTest extends FunctionalTest
         }
         $headers = [];
         if ($csrfTokenType === 'valid') {
-            $headers['X-CSRF-TOKEN'] = SecurityToken::getSecurityID();
+            $headers['x-csrf-token'] = SecurityToken::getSecurityID();
         } elseif ($csrfTokenType === 'invalid') {
-            $headers['X-CSRF-TOKEN'] = 'nonsense';
+            $headers['x-csrf-token'] = 'nonsense';
         }
         return $this->mainSession->sendRequest($method, $url, [], $headers, null, $body);
     }

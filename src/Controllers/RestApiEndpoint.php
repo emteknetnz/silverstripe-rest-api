@@ -152,9 +152,9 @@ abstract class RestApiEndpoint extends Controller
     /**
      * Check if the user is authenticated (a.k.a logged in) which is required to view a private API
      * 
-     * If ACCESS is not PUBLIC then the X-CSRF-TOKEN must be present and match
+     * If ACCESS is not PUBLIC then the x-csrf-token must be present and match
      * 
-     * Will throw a 400 error if missing X-CSRF-TOKEN header or failed csrf token check
+     * Will throw a 400 error if missing x-csrf-token header or failed csrf token check
      * 
      * The following status error codes may need to be raised if false is returned
      * 401 logged-out when need to be logged-in
@@ -177,12 +177,12 @@ abstract class RestApiEndpoint extends Controller
         }
         // CSRF-Token check only on non-subSchemaAccess aka root level
         if (SecurityToken::is_enabled() && $subSchemaAccess === '') {
-            $token = $this->getRequest()->getHeader('X-CSRF-TOKEN');
+            $token = $this->getRequest()->getHeader('x-csrf-token');
             if (!$token) {
-                throw new RestApiEndpointException('Missing X-CSRF-TOKEN header', 400);
+                throw new RestApiEndpointException('Missing x-csrf-token header', 400);
             }
             if (!SecurityToken::inst()->check($token)) {
-                throw new RestApiEndpointException('Invalid CSRF token', 400);
+                throw new RestApiEndpointException('Invalid csrf token', 400);
             }
         }
         return true;

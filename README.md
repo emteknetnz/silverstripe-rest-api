@@ -6,13 +6,13 @@ This module allows you to quickly and easily create secure REST API endpoints th
 
 Simply subclass the `RestApiEndpoint` class and define your endpoint with `private static array` configuration.
 
-An endpoint provides data for one DataObject type, for instance SiteTree::class. To provide data for more DataObject types simply add more endpoints.
+An endpoint provides data for one DataObject type, for instance `SiteTree`. To provide data for more DataObject types simply add more endpoints.
 
-This module is not intended to replace regular Silverstripe controller endpoints if you endedpoint provides non-DataObject data.
+This module is not intended to replace regular Silverstripe controller endpoints if you endpoint provides non-DataObject data.
 
 These instructions assume you have created a project that have `silverstripe/recipe-cms` in the composer.json as some of the code instructions include the `SiteTree` class. You can still use this module without `silverstripe/recipe-cms` as `silverstripe/framework` is the only requirement, though `silverstripe/versioned` is required for the `publish`, `unpublish` and `archive` actions.
 
-Also a common gotcha, if your dataobject isn't showing in the JSON response then you probably need to add a `canView()` to your dataobject that returns `true`. Alternatively you can simply disable the `canView()` check by setting `CALL_CAN_METHODS` to `CREATE_EDIT_DELETE_ACTION` in your endpoint config.
+Also a common gotcha, if your dataobject isn't showing in the JSON response then you probably need to add a `canView()` to your dataobject that returns `true`. Alternatively you can simply disable the `canView()` check by setting `CALL_CAN_METHODS` to `CREATE_EDIT_DELETE_ACTION` (which lacks `VIEW`) in your endpoint config.
 
 ### Contents:
 
@@ -81,7 +81,7 @@ Visit `https://mysite.test/api/pages/1` to see endpoint data for page with an `I
 
 ## Querying data<a name="readme-querying-data"></a>
 
-Filter data by adding querystring parameters to a GET request made to the endpoint
+Filter data by adding querystring parameters to a `GET` request made to the endpoint
 
 ### Filtering<a name="readme-filtering"></a>
 
@@ -168,7 +168,7 @@ The following failure codes are used in a variety of requests
 
 | Status code | Description |
 | - | - |
-| `400` | Bad request, for example a missing `X-CSRF-TOKEN` header |
+| `400` | Bad request, for example a missing `x-csrf-token` header |
 | `401` | The current user cannot access the endpoint because they failed an access check configured with `ACCESS`|
 | `403` | HTTP method is forbidden for the current user because they failed a `can*()` check configured with `CALL_CAN_METHODS` |
 | `405` | HTTP method not allowed on this endpoint configured with `ALLOWED_OPERATIONS` |
@@ -278,7 +278,7 @@ Endpoint configuration is done using the `private array static $api_config` fiel
 | `PATH` | The path to your API<br><br>A leading forward slash is optional.<br><br>Warning: starting the path with `/admin` will NOT require the user to log into the admin section before accessing the API which is probably not what you would expect |
 | `DATA_CLASS` | The FQCN of DataObject for the API endpoint |
 | `FIELDS` | An associative array of fields to show where `'jsonKey'` => `'dataObjectKey'`<br><br>DataObject methods can be also be used along with regular fields, though you cannot perform queries on DataObject methods.<br><br>Nested relations on DataObjects can also be used. |
-| `ACCESS` | The level of access required for the endpoint or for an individual field or relation. Options are:<ul><li>`PUBLIC` - Can be accessed by anyone including not-logged-in users</li><li>`LOGGED_IN` - Must be logged in to access</li><li>`<PERMISSION_CODE>` - User must be in a Group with this permission code</li><br><br>If this is not set to `PUBLIC` the an `X-CSRF-TOKEN` header must be past in unless it has been disabled - see the [CSRF token](#readme-csrf-token) section below.<br><br>If set to `PUBLIC` it is strongly recommended that `ALLOWED_OPERATIONS` is set to `VIEW` (which is the default) so that write operations are not permitted.<br><br>If the [silverstripe/versioned](https://github.com/silverstripe/silverstripe-versioned) module is installed then the reading mode will be set to `Versioned::DRAFT` so that draft content is read and written. |
+| `ACCESS` | The level of access required for the endpoint or for an individual field or relation. Options are:<ul><li>`PUBLIC` - Can be accessed by anyone including not-logged-in users</li><li>`LOGGED_IN` - Must be logged in to access</li><li>`<PERMISSION_CODE>` - User must be in a Group with this permission code</li><br><br>If this is not set to `PUBLIC` the an `x-csrf-token` header must be past in unless it has been disabled - see the [CSRF token](#readme-csrf-token) section below.<br><br>If set to `PUBLIC` it is strongly recommended that `ALLOWED_OPERATIONS` is set to `VIEW` (which is the default) so that write operations are not permitted.<br><br>If the [silverstripe/versioned](https://github.com/silverstripe/silverstripe-versioned) module is installed then the reading mode will be set to `Versioned::DRAFT` so that draft content is read and written. |
 | `ALLOWED_OPERATIONS` | The operations that are allowed on the endpoint which can be any combination of:<ul><li>`VIEW` - Can view the data. Used for `GET` and `HEAD` HTTP requests.</li><li>`CREATE` - Can create new data using `POST` HTTP requests.</li><li>`EDIT` - Can update existing data using `PATCH` HTTP requests.</li><li>`DELETE` - Can delete existing data using `DELETE` HTTP requests.</li><li>`ACTION` - Can call actions e.g. the `/publish` action using `PUT` HTTP requests.</li></ul>Multiple operations can be joined together with `DELIMITER` which by default is `_` for instance `CREATE_EDIT_DELETE_ACTION`<br><br>Default is `VIEW`<br><br>Note that the `OPTIONS` HTTP request is always allowed |
 | `CALL_CAN_METHODS` | The `can*()` methods that are called on every DataObject, i.e.<ul><li>`VIEW` - Call `canView()` when making a `GET` or `HEAD` request</li><li>`CREATE` - Call `canCreate()` when making a `POST` request</li><li>`EDIT` - Call `canEdit()` when making a `PATCH` request</li><li>`DELETE` - Call `canDelete()` when making a `DELETE` request</li><li>`ACTION` - Call relevant method when running an action e.g. `canPublish()` when calling the `/publish` action</li></ul>Join together with `DELIMITER` which by default is `_` for instance `EDIT_DELETE`<br><br>Default is `VIEW_CREATE_EDIT_DELETE_ACTION`<br><br>To only disable `canView()` to increase performance, set to `CREATE_EDIT_DELETE_ACTION` - note be careful doing this if the endpoint allows write operations that allow updating a `has_one` relation because that may be set to a relation record that would normally fail a `canView()` check for the user and the user can then view the updated relation JSON in the response body.<br><br>To disable all `can*()` checks set to `NONE` |
 | `CACHE_MAX_AGE_VIEW` | The `max-age` set in the HTTP `Cache-control` header for `GET` requests<br><br>Default is `0` which will will result as `no-cache` being used instead of `max-age` |
@@ -351,14 +351,14 @@ private static array $api_config = [
 
 ## CSRF token<a name="readme-token"></a>
 
-If the endpoint `ACCESS` is set to anything except `PUBLIC` then an `X-CSRF-TOKEN` header needs to be sent with the request. A valid token is generated by `SilverStripe\Security\SecurityToken::getSecurityID()`. Within the CMS is easily available to javascript from `window.ss.config['SecurityID'];`.
+If the endpoint `ACCESS` is set to anything except `PUBLIC` then an `x-csrf-token` header needs to be sent with the request. A valid token is generated by `SilverStripe\Security\SecurityToken::getSecurityID()`. Within the CMS is easily available to javascript from `window.ss.config['SecurityID'];`.
 
-For instance the following javascript code will make a `GET` request that includes the `X-CSRF-TOKEN` header when logged into Silverstripe CMS:
+For instance the following javascript code will make a `GET` request that includes the `x-csrf-token` header when logged into Silverstripe CMS:
 
 ```js
 fetch(
     '/api/pages',
-    { headers: { 'X-CSRF-TOKEN': window.ss.config.SecurityID } }
+    { headers: { 'x-csrf-token': window.ss.config.SecurityID } }
 )
     .then(response => response.json())
     .then(responseJson => console.log(responseJson));
@@ -370,7 +370,7 @@ You may need to add custom logic to your API which can do with using the followi
 
 For example the following implementation of the `onEditBeforeWrite()` hook will update the `Content` field of a DataObject updated via a `PATCH` request before saving, even though the `Content` field is not exposed in the API.
 
-Note to run this code example you need to be logged in to the CMS to use and pass an `X-CSRF-TOKEN` header when making requests.
+Note to run this code example you need to be logged in to the CMS to use and pass an `x-csrf-token` header when making requests.
 
 **src/MySiteTreeEndpoint.php**
 
