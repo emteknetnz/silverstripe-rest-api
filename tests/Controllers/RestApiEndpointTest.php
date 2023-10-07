@@ -1188,10 +1188,22 @@ class RestApiEndpointTest extends FunctionalTest
             $expectedHeadOneHeaders = array_filter($expectedHeadOneHeaders, $fn, ARRAY_FILTER_USE_KEY);
             $expectedHeadManyHeaders = array_filter($expectedHeadManyHeaders, $fn, ARRAY_FILTER_USE_KEY);
         }
+        // - remove the time portion from the expires header as there is sporadically a one second difference
+        //   when running in CI on github actions
+        // - sort headers alphabetically so they be asserted against each other
+        $updateArray = function (&$arr) {
+            $arr['expires'] = preg_replace('# [0-9]{2}:[0-9]{2}:[0-9]{2}#', '', $arr['expires']);
+            ksort($arr);
+        };
+        // ensure headers are in the same order
+        $updateArray($expectedHeadOneHeaders);
+        $updateArray($headOneHeaders);
+        $updateArray($expectedHeadManyHeaders);
+        $updateArray($headManyHeaders);
         $this->assertSame(204, $headOneResponse->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedHeadOneHeaders, $headOneHeaders);
+        $this->assertSame($expectedHeadOneHeaders, $headOneHeaders);
         $this->assertSame(204, $headManyResponse->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedHeadManyHeaders, $headManyHeaders);
+        $this->assertSame($expectedHeadManyHeaders, $headManyHeaders);
     }
 
     /**
