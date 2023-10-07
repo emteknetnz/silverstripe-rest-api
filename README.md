@@ -1,5 +1,7 @@
 # Silverstripe REST API
 
+**NOTE: This module is currently a pre-release. The API and/or behaviour may change as newer pre-release versions are tagged.**
+
 This module allows you to quickly and easily create secure REST API endpoints that can be used for both providing database records as JSON as well as optionally allow data to be updated through the API.
 
 Simply subclass the `RestApiEndpoint` class and define your endpoint with `private static array` configuration.
