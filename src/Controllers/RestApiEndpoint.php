@@ -580,14 +580,22 @@ abstract class RestApiEndpoint extends Controller
         if (!$action) {
             throw new RestApiEndpointException('No action specified', 400);
         }
+        $dataClass = $this->endpointConfig(self::DATA_CLASS, false);
+        $obj = $this->dataObjectFromRequest($dataClass);
+        $this->invokeWithExtensions('onBeforeAction', $obj, $action);
         if (in_array($action, ['publish', 'unpublish', 'archive'])) {
-            return $this->apiVersioning($action);
+            $response = $this->apiVersioning($obj, $action);
         } else {
             throw new RestApiEndpointException('Invalid action', 400);
         }
+        $this->invokeWithExtensions('onAfterAction', $obj, $action);
+        return $response;
     }
 
-    private function apiVersioning(string $action): HTTPResponse
+    /**
+     * Run versioning actions e.g. publish, unpublish, archive
+     */
+    private function apiVersioning(DataObject $obj, string $action): HTTPResponse
     {
         $dataClass = $this->endpointConfig(self::DATA_CLASS, false);
         $callCanMethods = $this->endpointConfig(self::CALL_CAN_METHODS, true);
@@ -596,7 +604,6 @@ abstract class RestApiEndpoint extends Controller
             $message = !Director::isDev() ? '' : "$dataClass does not support Versioning";
             throw new RestApiEndpointException($message, 404);
         }
-        $obj = $this->dataObjectFromRequest($dataClass);
         if ($action === 'publish') {
             if ($doCheck && !$obj->canPublish()) {
                 throw new RestApiEndpointException('', 403);

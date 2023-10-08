@@ -2286,6 +2286,10 @@ class RestApiEndpointTest extends FunctionalTest
         $this->req('DELETE', TestTask::get()->first()->ID);
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onDeleteBeforeDelete']);
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onDeleteAfterDelete']);
+        // Action
+        $this->req('ACTION', TestTask::get()->first()->ID, 'publish');
+        $this->assertTrue(TestApiEndpoint::$hooksCalled['onBeforeAction']);
+        $this->assertTrue(TestApiEndpoint::$hooksCalled['onAfterAction']);
         // BeforeSendResponse
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onBeforeSendResponse']);
     }

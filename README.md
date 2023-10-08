@@ -430,5 +430,7 @@ Notes:
 | `onEditAfterWrite(DataObject $obj)` | Called during `PATCH` requests after calling `$obj->write()` |
 | `onDeleteBeforeDelete(DataObject $obj)` | Called during `DELETE` requests before calling `$obj->write()` |
 | `onDeleteAfterDelete(DataObject $obj)` | Called during `DELETE` requests after calling `$obj->write()` |
+| `onBeforeAction(DataObject $obj, string $action)` | Called during `ACTION` requests before running the action |
+| `onAfterAction(DataObject $obj, string $action)` | Called during `ACTION` requests after running the action |
 | `onBeforeSendResponse(HTTPResponse $response)` | Called during all requests before sending HTTP response |
 | `updateApiConfig(array &$apiConfig)` | Called during all requests before any processing. Allows late updates to `private static array $api_config`, though modifying the `RestApiEndpoint::PATH` key has no effect at this stage |

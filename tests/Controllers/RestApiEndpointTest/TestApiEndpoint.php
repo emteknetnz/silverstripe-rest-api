@@ -175,6 +175,16 @@ class TestApiEndpoint extends RestApiEndpoint implements PermissionProvider, Tes
         self::$hooksCalled['onDeleteAfterDelete'] = true;
     }
 
+    protected function onBeforeAction(DataObject $obj, string $action): void
+    {
+        self::$hooksCalled['onBeforeAction'] = true;
+    }
+
+    protected function onAfterAction(DataObject $obj, string $action): void
+    {
+        self::$hooksCalled['onAfterAction'] = true;
+    }
+
     protected function onBeforeSendResponse(HTTPResponse $response): void
     {
         self::$hooksCalled['onBeforeSendResponse'] = true;
