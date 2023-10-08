@@ -271,6 +271,18 @@ class RestApiEndpointTest extends FunctionalTest
         ];
     }
 
+    public function testDisableCsrfToken(): void
+    {
+        // Disabling the security token in this test won't causes issues in other tests
+        SecurityToken::disable();
+        $this->setConfig(self::ACCESS, self::TEST_API_ACCESS);
+        $this->login(self::AUTH_LEVEL_PERM_CODE);
+        $id = TestTask::get()->first()->ID;
+        $response = $this->req('GET', $id, null, null, null, null, 'missing');
+        $this->assertFalse(SecurityToken::is_enabled());
+        $this->assertSame(200, $response->getStatusCode());
+    }
+
     /**
      * @dataProvider provideCsrfToken
      */
@@ -283,6 +295,7 @@ class RestApiEndpointTest extends FunctionalTest
         $this->login(self::AUTH_LEVEL_PERM_CODE);
         $id = TestTask::get()->first()->ID;
         $response = $this->req('GET', $id, null, null, null, null, $csrfTokenType);
+        $this->assertTrue(SecurityToken::is_enabled());
         $this->assertSame($expectedStatusCode, $response->getStatusCode());
     }
 
