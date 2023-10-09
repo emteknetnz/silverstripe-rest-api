@@ -564,7 +564,11 @@ abstract class RestApiEndpoint extends Controller
         }
         $obj = $this->dataObjectFromRequest($dataClass);
         $this->invokeWithExtensions('onDeleteBeforeDelete', $obj);
-        $obj->delete();
+        if ($obj->hasExtension(Versioned::class)) {
+            $obj->doArchive();
+        } else {
+            $obj->delete();
+        }
         $this->invokeWithExtensions('onDeleteAfterDelete', $obj);
         // Will default to a 200 status code
         // A 204 status code is not used because there is stil JSON content returned in the body
@@ -597,11 +601,10 @@ abstract class RestApiEndpoint extends Controller
      */
     private function apiVersioning(DataObject $obj, string $action): HTTPResponse
     {
-        $dataClass = $this->endpointConfig(self::DATA_CLASS, false);
         $callCanMethods = $this->endpointConfig(self::CALL_CAN_METHODS, true);
         $doCheck = $this->configContains($callCanMethods, self::ACTION);
-        if (!$dataClass::singleton()->hasExtension(Versioned::class)) {
-            $message = !Director::isDev() ? '' : "$dataClass does not support Versioning";
+        if (!$obj->hasExtension(Versioned::class)) {
+            $message = !Director::isDev() ? '' : get_class($obj) . ' does not support Versioning';
             throw new RestApiEndpointException($message, 404);
         }
         if ($action === 'publish') {

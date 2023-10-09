@@ -118,6 +118,8 @@ class TestApiEndpoint extends RestApiEndpoint implements PermissionProvider, Tes
         'onEditAfterWrite' => false,
         'onDeleteBeforeDelete' => false,
         'onDeleteAfterDelete' => false,
+        'onBeforeAction' => false,
+        'onAfterAction' => false,
         'onBeforeSendResponse' => false,
     ];
 

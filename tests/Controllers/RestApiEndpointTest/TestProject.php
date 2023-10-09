@@ -8,6 +8,7 @@ use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestTeam;
 use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestMilestone;
 use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestCanMethodsTrait;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Versioned\Versioned;
 
 class TestProject extends DataObject implements TestOnly
 {
@@ -27,4 +28,9 @@ class TestProject extends DataObject implements TestOnly
     ];
 
     private static $table_name = 'TestProject';
+
+    private static $extensions = [
+        Versioned::class,
+        TestVersionedExtension::class,
+    ];
 }

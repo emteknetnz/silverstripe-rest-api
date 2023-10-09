@@ -240,7 +240,7 @@ Example:
 
 ### DELETE<a name="readme-http-delete"></a>
 
-The `DELETE` HTTP request is used to delete an existing record where ID is specified in the URL.
+The `DELETE` HTTP request is used to delete an existing record where ID is specified in the URL. If the `Versioned` extension from the `silverstripe/versioned` module has been applied to the DataObject then the `doArchive()` method is called on the DataObject which deletes it from other the draft and live versions of the site. If the `Versioned` extension has not bee applied then the `delete()` method will be called on DataObject instead.
 
 Example:
 - `curl -X DELETE https://mysite.test/api/pages/123`
@@ -258,9 +258,9 @@ Actions can only be run on existing records. The action parameter is added to th
 The following actions are available:
 | Action | Description |
 | - | - |
-| `publish` | Publish a record. Requires `silverstripe/versioned` to be installed. |
-| `unpublish` | Unpublish a record. Requires `silverstripe/versioned` to be installed. |
-| `archive` | Archive a record. Requires `silverstripe/versioned` to be installed. |
+| `publish` | Publish a record. Requires the `Versioned` extension from `silverstripe/versioned` module to be applied to the `DataObject`. |
+| `unpublish` | Unpublish a record. Requires the `Versioned` extension from `silverstripe/versioned` module to be applied to the `DataObject`. |
+| `archive` | Archive a record. Requires the `Versioned` extension from `silverstripe/versioned` module to be applied to the `DataObject`. Note this similar to using the `DELETE` HTTP method. |
 
 Example:
 - `curl -X PUT https://mysite.test/api/pages/123/publish`

@@ -17,6 +17,7 @@ use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestTeam;
 use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestCanMethodStatic;
 use emteknetnz\RestApi\Exceptions\RestApiEndpointConfigException;
 use SilverStripe\Security\SecurityToken;
+use SilverStripe\Versioned\Versioned;
 
 # vendor/bin/phpunit app/tests/Controllers/RestApiTest.php flush=1
 
@@ -186,6 +187,10 @@ class RestApiEndpointTest extends FunctionalTest
             'AllowedOperationsCreate' => 'TestTask 04 AllowedOperationsCreate',
             'AllowedOperationsEdit' => 'TestTask 04 AllowedOperationsEdit',
         ])->write();
+        // TestTask has the Versioned extension on it to support versioning tests
+        foreach (TestTask::get() as $testTask) {
+            $testTask->publishRecursive();
+        }
     }
 
     /**
@@ -2268,8 +2273,10 @@ class RestApiEndpointTest extends FunctionalTest
 
     public function testExtensionHooks(): void
     {
+        $task = TestTask::get()->first();
+        $taskID = $task->ID;
         // ViewOne
-        $this->req('GET', TestTask::get()->first()->ID);
+        $this->req('GET', $taskID);
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onViewOne']);
         // ViewMany
         $this->req('GET');
@@ -2279,17 +2286,17 @@ class RestApiEndpointTest extends FunctionalTest
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onCreateBeforeWrite']);
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onCreateAfterWrite']);
         // Edit
-        $this->req('PATCH', TestTask::get()->first()->ID, null, null, ['title' => 'test']);
+        $this->req('PATCH', $taskID, null, null, ['title' => 'test']);
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onEditBeforeWrite']);
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onEditAfterWrite']);
-        // Delete
-        $this->req('DELETE', TestTask::get()->first()->ID);
-        $this->assertTrue(TestApiEndpoint::$hooksCalled['onDeleteBeforeDelete']);
-        $this->assertTrue(TestApiEndpoint::$hooksCalled['onDeleteAfterDelete']);
         // Action
-        $this->req('ACTION', TestTask::get()->first()->ID, 'publish');
+        $this->req('PUT', $taskID, 'publish');
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onBeforeAction']);
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onAfterAction']);
+        // Delete - need to call this after all the others
+        $this->req('DELETE', $taskID);
+        $this->assertTrue(TestApiEndpoint::$hooksCalled['onDeleteBeforeDelete']);
+        $this->assertTrue(TestApiEndpoint::$hooksCalled['onDeleteAfterDelete']);
         // BeforeSendResponse
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onBeforeSendResponse']);
     }
