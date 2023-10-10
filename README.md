@@ -364,7 +364,7 @@ fetch(
     .then(responseJson => console.log(responseJson));
 ```
 
-When working with non-public API endpoints you may wish to disable the csrf token check so that you can quickly test `GET` queries in your browsers location bar. You can do this by calling `SecurityToken::disable()` in `app/_config.php`, though if you do this be very careful this isn't then disabled in production too. To be safe, wrap this in a check to an environment variable which you then define if your personal .env file, for example:
+When working with non-public API endpoints you may wish to disable the csrf token check so that you can quickly test `GET` queries in your browsers location bar. You can do this by calling `SecurityToken::disable()` in `app/_config.php`, though if you do this be very careful this isn't then disabled in production too. To be safe, wrap this in a check to an environment variable of your choosing that you set in your local .env file, for example:
 
 ```php
 use SilverStripe\Core\Environment;
@@ -433,4 +433,4 @@ Notes:
 | `onBeforeAction(DataObject $obj, string $action)` | Called during `ACTION` requests before running the action |
 | `onAfterAction(DataObject $obj, string $action)` | Called during `ACTION` requests after running the action |
 | `onBeforeSendResponse(HTTPResponse $response)` | Called during all requests before sending HTTP response |
-| `updateApiConfig(array &$apiConfig)` | Called during all requests before any processing. Allows late updates to `private static array $api_config`, though modifying the `RestApiEndpoint::PATH` key has no effect at this stage |
+| `updateApiConfig(array &$apiConfig)` | Called during all requests before any processing. Allows late updates to `private static array $api_config`. Note that modifying the `RestApiEndpoint::PATH` key will have no effect at this stage |

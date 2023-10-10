@@ -121,6 +121,7 @@ class TestApiEndpoint extends RestApiEndpoint implements PermissionProvider, Tes
         'onBeforeAction' => false,
         'onAfterAction' => false,
         'onBeforeSendResponse' => false,
+        'updateApiConfig' => false,
     ];
 
     public function providePermissions()
@@ -190,5 +191,10 @@ class TestApiEndpoint extends RestApiEndpoint implements PermissionProvider, Tes
     protected function onBeforeSendResponse(HTTPResponse $response): void
     {
         self::$hooksCalled['onBeforeSendResponse'] = true;
+    }
+
+    protected function updateApiConfig(array $apiConfig): void
+    {
+        self::$hooksCalled['updateApiConfig'] = true;
     }
 }

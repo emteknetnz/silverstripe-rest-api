@@ -2299,6 +2299,7 @@ class RestApiEndpointTest extends FunctionalTest
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onDeleteAfterDelete']);
         // BeforeSendResponse
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onBeforeSendResponse']);
+        $this->assertTrue(TestApiEndpoint::$hooksCalled['updateApiConfig']);
     }
 
     private function login(int $authLevel)
