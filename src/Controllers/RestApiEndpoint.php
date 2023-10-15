@@ -306,7 +306,7 @@ abstract class RestApiEndpoint extends Controller
         }
         return $this->apiViewMany($request);
     }
-    
+
     /**
      * View one value from the API - used for GET requests
      */

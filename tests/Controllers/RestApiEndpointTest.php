@@ -17,7 +17,8 @@ use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestTeam;
 use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestCanMethodStatic;
 use emteknetnz\RestApi\Exceptions\RestApiEndpointConfigException;
 use SilverStripe\Security\SecurityToken;
-use SilverStripe\Versioned\Versioned;
+use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestVersionedExtension;
+
 
 # vendor/bin/phpunit app/tests/Controllers/RestApiTest.php flush=1
 
@@ -83,6 +84,7 @@ class RestApiEndpointTest extends FunctionalTest
         SecurityToken::enable();
         TestCanMethodStatic::setCanMethodsThatPass(self::VIEW_CREATE_EDIT_DELETE_ACTION);
         TestApiEndpoint::resetHooksCalled();
+        TestVersionedExtension::enableAutoPublish();
         $this->setConfig(self::PATH, $this->endpointPath);
         // Create fixtures
         $testTeam = TestTeam::create([
@@ -2300,6 +2302,30 @@ class RestApiEndpointTest extends FunctionalTest
         // BeforeSendResponse
         $this->assertTrue(TestApiEndpoint::$hooksCalled['onBeforeSendResponse']);
         $this->assertTrue(TestApiEndpoint::$hooksCalled['updateApiConfig']);
+    }
+
+    public function testVersionedActions(): void
+    {
+        // Set ACCESS to LOGGED_IN to set versioned mode to DRAFT in rest-api
+        $this->setConfig(self::ACCESS, self::LOGGED_IN);
+        $this->login(self::AUTH_LEVEL_LOGGED_IN);
+        TestVersionedExtension::disableAutoPublish();
+        $task = TestTask::get()->first();
+        $taskID = $task->ID;
+        // create a draft change
+        $this->req('PATCH', $taskID, null, null, ['title' => 'Updated'])->getStatusCode();
+        // assert versioning actions
+        $task = TestTask::get()->byID($taskID);
+        $this->assertTrue($task->stagesDiffer());
+        $this->req('PUT', $taskID, 'publish');
+        $task = TestTask::get()->byID($taskID);
+        $this->assertFalse($task->stagesDiffer());
+        $this->req('PUT', $taskID, 'unpublish');
+        $task = TestTask::get()->byID($taskID);
+        $this->assertTrue($task->stagesDiffer());
+        $this->req('PUT', $taskID, 'archive');
+        $task = TestTask::get()->byID($taskID);
+        $this->assertNull($task);
     }
 
     private function login(int $authLevel)
