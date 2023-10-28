@@ -539,13 +539,14 @@ abstract class RestApiEndpoint extends Controller
         // update dataObject
         $obj = $this->dataObjectFromRequest($dataClass);
         $this->updateDataObjectWithData($obj, $data, self::EDIT);
-        $this->invokeWithExtensions('onEditBeforeWrite', $obj);
+        $changedFields = $obj->getChangedFields();
+        $this->invokeWithExtensions('onEditBeforeWrite', $obj, $changedFields);
         try {
             $obj->write();
         } catch (ValidationException $e) {
             return $this->error($e->getMessage(), 422);
         }
-        $this->invokeWithExtensions('onEditAfterWrite', $obj);
+        $this->invokeWithExtensions('onEditAfterWrite', $obj, $changedFields);
         return $this->success($this->jsonData($obj), 200);
     }
 

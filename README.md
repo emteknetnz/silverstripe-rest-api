@@ -418,7 +418,7 @@ Notes:
 
 - If your extension hook updates the DataObject or another DataObject then it is likely you should use a different extension hook such as `onAfterWrite()` on the Dataobject itself rather than on the endpoint. This is because it usually shouldn't matter whether the object was created/updated/deleted via the API or a different way. These hooks are intended to facilitate the implementation of API specific code such as logging operations done via the API.
 - For the `onView*()` hooks if you are adding extra data to the JSON for the response, remember to call `canView()` for any DataObjects being added as required.
-- For the `onEdit*Write()` hooks you may find it useful to get the fields changed in the operations with `$obj->getChangedFields()`.
+- For both of the `onEdit*Write()` hooks the `$changedFields` param is return value of `$obj->getChangedFields()` before the object was written to.
 
 | Extension hook | Description |
 | - | - |
@@ -426,8 +426,8 @@ Notes:
 | `onViewMany(array $objs)` | Called during `GET` requests to view many records before rendering JSON for response |
 | `onCreateBeforeWrite(DataObject $obj)` | Called during `POST` requests before calling `$obj->write()` |
 | `onCreateAfterWrite(DataObject $obj)` | Called during `POST` requests after calling `$obj->write()` |
-| `onEditBeforeWrite(DataObject $obj)` | Called during `PATCH` requests before calling `$obj->write()` |
-| `onEditAfterWrite(DataObject $obj)` | Called during `PATCH` requests after calling `$obj->write()` |
+| `onEditBeforeWrite(DataObject $obj, array $changedFields)` | Called during `PATCH` requests before calling `$obj->write()` |
+| `onEditAfterWrite(DataObject $obj, array $changedFields)` | Called during `PATCH` requests after calling `$obj->write()` |
 | `onDeleteBeforeDelete(DataObject $obj)` | Called during `DELETE` requests before calling `$obj->write()` |
 | `onDeleteAfterDelete(DataObject $obj)` | Called during `DELETE` requests after calling `$obj->write()` |
 | `onBeforeAction(DataObject $obj, string $action)` | Called during `ACTION` requests before running the action |

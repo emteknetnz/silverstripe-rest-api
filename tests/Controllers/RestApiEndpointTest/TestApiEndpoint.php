@@ -158,12 +158,12 @@ class TestApiEndpoint extends RestApiEndpoint implements PermissionProvider, Tes
         self::$hooksCalled['onCreateAfterWrite'] = true;
     }
 
-    protected function onEditBeforeWrite(DataObject $obj): void
+    protected function onEditBeforeWrite(DataObject $obj, array $changedFields): void
     {
         self::$hooksCalled['onEditBeforeWrite'] = true;
     }
 
-    protected function onEditAfterWrite(DataObject $obj): void
+    protected function onEditAfterWrite(DataObject $obj, array $changedFields): void
     {
         self::$hooksCalled['onEditAfterWrite'] = true;
     }
