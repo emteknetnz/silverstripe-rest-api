@@ -344,8 +344,14 @@ abstract class RestApiEndpoint extends Controller
         /** @var DataList $objs */
         $dataClass = $this->endpointConfig(self::DATA_CLASS, false);
         $objs = $dataClass::get();
-        $objs = $objs->filter($this->filterFromRequest());
-        $objs = $objs->sort($this->sortFromRequest());
+        $filter = $this->filterFromRequest();
+        if ($filter) {
+            $objs = $objs->filter($this->filterFromRequest());
+        }
+        $sort = $this->sortFromRequest();
+        if ($sort) {
+            $objs = $objs->sort($this->sortFromRequest());
+        }
         $objs = $objs->limit($this->limitFromRequest(), $this->offsetFromRequest());
         $this->invokeWithExtensions('onViewMany', $objs);
         foreach ($objs as $obj) {
