@@ -377,6 +377,8 @@ if (Environment::getEnv('DISABLE_API_CSRF_TOKEN_CHECK')) {
 }
 ```
 
+The `x-csrf-token` header is available as a constant on `RestApiEndpoint::CSRF_TOKEN_HEADER`.
+
 ## Extension hooks<a name="readme-extension-hooks"></a>
 
 You may need to add custom logic to your API which can do with using the following extension hooks available in the table below. Implement a hook by adding one of these methods directly to your subclass of `RestApiEndpoint` using the `protected` visibility. You can also implement them on extension classes with a `public` visibility.
@@ -422,6 +424,8 @@ Notes:
 
 | Extension hook | Description |
 | - | - |
+| `onBeforeApi()` | Called during all requests before any processing |
+| `onAfterApi()` | Called during all requests after any processing |
 | `onViewOne(DataObject $obj)` | Called during `GET` requests to view a single record before rendering JSON for response |
 | `onViewMany(array $objs)` | Called during `GET` requests to view many records before rendering JSON for response |
 | `onCreateBeforeWrite(DataObject $obj)` | Called during `POST` requests before calling `$obj->write()` |
