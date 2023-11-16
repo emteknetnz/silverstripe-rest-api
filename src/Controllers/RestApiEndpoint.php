@@ -46,6 +46,8 @@ abstract class RestApiEndpoint extends Controller
     public const DELIMITER = '_';
     public const CREATE_EDIT_DELETE_ACTION = 'CREATE_EDIT_DELETE_ACTION';
     public const VIEW_CREATE_EDIT_DELETE_ACTION = 'VIEW_CREATE_EDIT_DELETE_ACTION';
+    // other constants
+    public const CSRF_TOKEN_HEADER = 'x-csrf-token';
 
     private static array $url_handlers = [
         '$@' => 'api',
@@ -63,6 +65,7 @@ abstract class RestApiEndpoint extends Controller
     public function api(): HTTPResponse
     {
         try {
+            $this->invokeWithExtensions('onBeforeApi');
             // Allow extensions or subclasses to update $api_config
             $apiConfig = $this->config()->get('api_config');
             $this->invokeWithExtensions('updateApiConfig', $apiConfig);
@@ -107,6 +110,8 @@ abstract class RestApiEndpoint extends Controller
             // In dev mode this gives feedback to the developer
             // In prod mode it doesn't give any feedback though it will show in error logs
             throw $e;
+        } finally {
+            $this->invokeWithExtensions('onAfterApi');
         }
     }
 
@@ -177,7 +182,7 @@ abstract class RestApiEndpoint extends Controller
         }
         // CSRF-Token check only on non-subSchemaAccess aka root level
         if (SecurityToken::is_enabled() && $subSchemaAccess === '') {
-            $token = $this->getRequest()->getHeader('x-csrf-token');
+            $token = $this->getRequest()->getHeader(self::CSRF_TOKEN_HEADER);
             if (!$token) {
                 throw new RestApiEndpointException('Missing x-csrf-token header', 400);
             }
