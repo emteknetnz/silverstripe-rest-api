@@ -53,6 +53,8 @@ class RestApiEndpointTest extends FunctionalTest
     public const DELIMITER = '_';
     public const CREATE_EDIT_DELETE_ACTION = 'CREATE_EDIT_DELETE_ACTION';
     public const VIEW_CREATE_EDIT_DELETE_ACTION = 'VIEW_CREATE_EDIT_DELETE_ACTION';
+    // other consts
+    public const CSRF_TOKEN_HEADER = 'x-csrf-token';
 
     // This is from TestApiEndpoint
     private const TEST_API_ACCESS = 'TEST_API_ACCESS';

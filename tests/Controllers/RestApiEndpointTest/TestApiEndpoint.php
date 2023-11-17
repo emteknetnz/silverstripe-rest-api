@@ -110,6 +110,8 @@ class TestApiEndpoint extends RestApiEndpoint implements PermissionProvider, Tes
     ];
 
     public static $hooksCalled = [
+        'onBeforeApi' => false,
+        'onAfterApi' => false,
         'onViewOne' => false,
         'onViewMany' => false,
         'onCreateBeforeWrite' => false,
@@ -136,6 +138,16 @@ class TestApiEndpoint extends RestApiEndpoint implements PermissionProvider, Tes
         foreach (array_keys(self::$hooksCalled) as $key) {
             self::$hooksCalled[$key] = false;
         }
+    }
+
+    protected function onBeforeApi(): void
+    {
+        self::$hooksCalled['onBeforeApi'] = true;
+    }
+
+    protected function onAfterApi(): void
+    {
+        self::$hooksCalled['onAfterApi'] = true;
     }
 
     protected function onViewOne(DataObject $obj): void
