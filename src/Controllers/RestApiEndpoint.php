@@ -2,6 +2,7 @@
 
 namespace emteknetnz\RestApi\Controllers;
 
+use App\Endpoints\PrivateTaskEndpoint;
 use emteknetnz\RestApi\Exceptions\RestApiEndpointException;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPResponse;
@@ -14,10 +15,12 @@ use SilverStripe\Control\Director;
 use SilverStripe\Security\Permission;
 use stdClass;
 use emteknetnz\RestApi\Exceptions\RestApiEndpointConfigException;
+use emteknetnz\RestApi\PermissionProviders\ApiTokenPermissionProvider;
 use SilverStripe\ORM\DataObjectSchema;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\SecurityToken;
 use SilverStripe\Versioned\Versioned;
+use SilverStripe\Security\Member;
 
 abstract class RestApiEndpoint extends Controller
 {
@@ -34,6 +37,7 @@ abstract class RestApiEndpoint extends Controller
     public const CACHE_MAX_AGE_OPTIONS = 'CACHE_MAX_AGE_OPTIONS';
     public const LIMIT_DEFAULT = 'LIMIT_DEFAULT';
     public const LIMIT_MAX = 'LIMIT_MAX';
+    public const ALLOW_API_TOKEN = 'ALLOW_API_TOKEN';
     // values
     public const PUBLIC = 'PUBLIC';
     public const LOGGED_IN = 'LOGGED_IN';
@@ -48,6 +52,7 @@ abstract class RestApiEndpoint extends Controller
     public const VIEW_CREATE_EDIT_DELETE_ACTION = 'VIEW_CREATE_EDIT_DELETE_ACTION';
     // other constants
     public const CSRF_TOKEN_HEADER = 'x-csrf-token';
+    public const API_TOKEN_HEADER = 'x-api-token';
 
     private static array $url_handlers = [
         '$@' => 'api',
@@ -58,6 +63,10 @@ abstract class RestApiEndpoint extends Controller
     ];
 
     private static array $api_config = [];
+
+    private bool $didAuthenticateWithApiToken = false;
+
+    private ?Member $currentLoggedInMember = null;
 
     /**
      * Main entry point for all Rest API's
@@ -70,6 +79,8 @@ abstract class RestApiEndpoint extends Controller
             $apiConfig = $this->config()->get('api_config');
             $this->invokeWithExtensions('updateApiConfig', $apiConfig);
             $this->config()->set('api_config', $apiConfig);
+            // Log members in with API token if it was passed in the request
+            $this->authenticateWithApiToken();
             // Check access
             if (!$this->canAccess()) {
                 $code = Security::getCurrentUser() ? 403 : 401;
@@ -111,7 +122,50 @@ abstract class RestApiEndpoint extends Controller
             // In prod mode it doesn't give any feedback though it will show in error logs
             throw $e;
         } finally {
+            $this->resetMemberIfAuthenticatedWithApiToken();
             $this->invokeWithExtensions('onAfterApi');
+        }
+    }
+
+    /**
+     * If a valid API token is pased in the request, set the current user to the member the API token belongs to
+     */
+    private function authenticateWithApiToken(): void
+    {
+        // TODO - check api_config if allowed to use api token authentication
+        $request = $this->getRequest();
+        $apiToken = $request->getHeader(self::API_TOKEN_HEADER);
+        if ($apiToken) {
+            $this->currentLoggedInMember = Security::getCurrentUser();
+            // find members in groups with the API_TOKEN_AUTHENTICATION permission
+            $groups = Permission::get_groups_by_permission(ApiTokenPermissionProvider::API_TOKEN_AUTHENTICATION);
+            $members = [];
+            foreach ($groups as $group) {
+                foreach ($group->Members() as $member) {
+                    $members[$member->ID] = $member;
+                }
+            }
+            foreach ($members as $member) {
+                // check the api token passed in the request header matches the member
+                if ($member->encryptWithUserSettings($apiToken) !== $member->ApiToken) {
+                    continue;
+                }
+                Security::setCurrentUser($member);
+                // add csrf token header here so that it passes check later on
+                $request->addHeader(self::CSRF_TOKEN_HEADER, SecurityToken::inst()->getValue());
+                $this->didAuthenticateWithApiToken = true;
+                break;
+            }
+        }
+    }
+
+    /**
+     * If the request used an API token then reset the member back to the current member (usually null)
+     */
+    private function resetMemberIfAuthenticatedWithApiToken(): void
+    {
+        if ($this->didAuthenticateWithApiToken) {
+            Security::setCurrentUser($this->currentLoggedInMember);
         }
     }
 

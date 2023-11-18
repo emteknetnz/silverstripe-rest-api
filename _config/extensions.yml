@@ -4,3 +4,7 @@ Name: restapi-extensions
 SilverStripe\Control\Director:
   extensions:
     - emteknetnz\RestApi\Extensions\DirectorExtension
+
+SilverStripe\Security\Member:
+  extensions:
+    - emteknetnz\RestApi\Extensions\ApiTokenMemberExtension

@@ -41,6 +41,7 @@ class RestApiEndpointTest extends FunctionalTest
     public const CACHE_MAX_AGE_OPTIONS = 'CACHE_MAX_AGE_OPTIONS';
     public const LIMIT_DEFAULT = 'LIMIT_DEFAULT';
     public const LIMIT_MAX = 'LIMIT_MAX';
+    public const ALLOW_API_TOKEN = 'ALLOW_API_TOKEN';
     // values
     public const PUBLIC = 'PUBLIC';
     public const LOGGED_IN = 'LOGGED_IN';
