@@ -386,7 +386,6 @@ abstract class RestApiEndpoint extends Controller
             $arr = explode(':', $jsonKey);
             $jsonKey = $arr[0];
             // support for has_one __ID relations
-            // TODO: unit test this
             $isIDField = false;
             $rx = '/__ID$/';
             if (preg_match($rx, $jsonKey)) {
