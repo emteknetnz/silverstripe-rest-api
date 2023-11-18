@@ -385,6 +385,14 @@ abstract class RestApiEndpoint extends Controller
             $searchFilter = '';
             $arr = explode(':', $jsonKey);
             $jsonKey = $arr[0];
+            // support for has_one __ID relations
+            // TODO: unit test this
+            $isIDField = false;
+            $rx = '/__ID$/';
+            if (preg_match($rx, $jsonKey)) {
+                $isIDField = true;
+                $jsonKey = preg_replace($rx, '', $jsonKey);
+            }
             $searchFilter = $arr[1] ?? '';
             $modifier = $arr[2] ?? '';
             if (!array_key_exists($jsonKey, $fields)) {
@@ -395,6 +403,9 @@ abstract class RestApiEndpoint extends Controller
             }
             $dataObjectKey = $fields[$jsonKey];
             $key = $dataObjectKey;
+            if ($isIDField) {
+                $key = $dataObjectKey[RestApiEndpoint::RELATION] . 'ID';
+            }
             if ($searchFilter) {
                 $key .= ":$searchFilter";
             }
