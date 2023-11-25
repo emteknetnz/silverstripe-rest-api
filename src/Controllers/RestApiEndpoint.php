@@ -14,7 +14,6 @@ use SilverStripe\Control\Director;
 use SilverStripe\Security\Permission;
 use stdClass;
 use emteknetnz\RestApi\Exceptions\RestApiEndpointConfigException;
-use emteknetnz\RestApi\PermissionProviders\ApiTokenPermissionProvider;
 use SilverStripe\ORM\DataObjectSchema;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\SecurityToken;
@@ -49,6 +48,8 @@ abstract class RestApiEndpoint extends Controller
     public const DELIMITER = '_';
     public const CREATE_EDIT_DELETE_ACTION = 'CREATE_EDIT_DELETE_ACTION';
     public const VIEW_CREATE_EDIT_DELETE_ACTION = 'VIEW_CREATE_EDIT_DELETE_ACTION';
+    // permissions
+    public const API_TOKEN_AUTHENTICATION = 'API_TOKEN_AUTHENTICATION';
     // other constants
     public const CSRF_TOKEN_HEADER = 'x-csrf-token';
     public const API_TOKEN_HEADER = 'x-api-token';
@@ -140,7 +141,7 @@ abstract class RestApiEndpoint extends Controller
         if ($apiToken) {
             $this->currentLoggedInMember = Security::getCurrentUser();
             // find members in groups with the API_TOKEN_AUTHENTICATION permission
-            $groups = Permission::get_groups_by_permission(ApiTokenPermissionProvider::API_TOKEN_AUTHENTICATION);
+            $groups = Permission::get_groups_by_permission(self::API_TOKEN_AUTHENTICATION);
             $members = [];
             foreach ($groups as $group) {
                 foreach ($group->Members() as $member) {

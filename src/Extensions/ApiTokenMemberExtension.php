@@ -2,7 +2,7 @@
 
 namespace emteknetnz\RestApi\Extensions;
 
-use emteknetnz\RestApi\PermissionProviders\ApiTokenPermissionProvider;
+use emteknetnz\RestApi\Controllers\RestApiEndpoint;
 use SilverStripe\Core\Extension;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\FieldList;
@@ -40,7 +40,7 @@ class ApiTokenMemberExtension extends Extension
         // Never show the encrypted API token database field
         $fields->removeByName('ApiToken');
         // Check the user is allowed to use API tokens
-        $code = ApiTokenPermissionProvider::API_TOKEN_AUTHENTICATION;
+        $code = RestApiEndpoint::API_TOKEN_AUTHENTICATION;
         if (!Permission::checkMember($member, $code)) {
             return;
         }

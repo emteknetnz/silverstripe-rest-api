@@ -383,14 +383,23 @@ The `x-csrf-token` header is available as a constant on `RestApiEndpoint::CSRF_T
 
 ## API token<a name="readme-api-token"></a>
 
-API's can be setup to allow members to authenticate with an `x-api-token` HTTP header instead of having to log in to the CMS.
+Non-public API's can be configured to allow members to authenticate using an HTTP header instead of having to log in to the CMS.
 
-If API authenticate is used, the member will be logged in only for the duration of the request i.e. they will be logged out before the JSON response is returned.
+If API authentication is used, the user will be logged in only for the duration of the request i.e. they will be logged out before the JSON response is returned.
 
-### Creating groups and users in the CMS
+This module provides a permission "Use an API token" which is `API_TOKEN_AUTHENTICATION` which must be assigned to a group that users using API tokens must belong to. The endpoints `ALLOW_API_ACCESS` config must be set to `true`.
+
+When a user and endpoint is set up to allow using an API token, pass an `x-api-token` header with the value of the API Token to authenticate. Note that API token authentication will bypass MFA if it was set up for that user.
+
+### Setting up an API user and group using the CMS
+
+#### Creating the API user and group
+
 1. Log in to the CMS as an administrator
+1. Go to the Security section
 1. Create a new group called "API Users"
-1. In the Permissions tab (top right), tick "Use an API token" - this is the label for the permission code `API_TOKEN_AUTHENTICATION`
+1. Click on the Permissions tab (top right)
+1. Tick "Use an API token" - this is the label for the permission code `API_TOKEN_AUTHENTICATION`
 1. Save the Group
 1. Click "Add Member"
 1. Create a new user with a "First name" of "api-user", an Email of "api-user@example.com", and a long random password
@@ -398,23 +407,17 @@ If API authenticate is used, the member will be logged in only for the duration 
 1. Tick the "Generate new API token" checkbox and click "Save"
 1. Copy the API token that is generated - you will only be shown this once
 
-### Additional member permissions
-1. The "api-user" still needs to pass all necessary permissions checks for the API to work
-1. You can either update the "API Users" group to have the necessary permissions, or
-1. Set the api end point `RestApiEndoint::CHECK_CAN_METHODS` to `RestApiEndoint::NONE` though if you do this you *MUST* ensure that the API `RestApiEndoint::ACCESS` is set to a permission code, not merely `RestApiEndpoint::LOGGED_IN`.
+#### Additional group permissions
 
-### Update endpoint $api_config
-1. Set `RestApiEndpoint::ALLOW_API_ACCESS` to `true`
-1. Set `RestApiEndpoint::ACCESS` to `ApiTokenPermissionProvider::API_TOKEN_AUTHENTICATION` for the strictest access control (recommended). Note the API can still be accessed without a API token if the member with the "Use an API token" logs in the the CMS.
-1. Alternatively, set this to `RestApiEndpoint::LOGGED_IN` to allow any logged in user to use the API, including without an API token, though to use the API member must be in a group with the "Use an API token" permission in order to authenticate
-1. Run `dev/build flush=1` for the configuration to take effect
+The "api-user" still needs to pass all necessary permissions checks for the API to work i.e. so that `canView()` checks still pass. You can either:
+- Update the "API Users" group to have the necessary permissions, or
+- Set the endpoints `CHECK_CAN_METHODS` to `NONE` though you *MUST* ensure that the API `ACCESS` is set to a permission code that is only assigned to dedicated api users.
 
-### Using the API token authentication
-1. Pass an `x-api-token` header with the value of the API Token
+### Programmatically updating a users API token
 
-### Programatically updating a members ApiToken
-1. Call `$member->refreshApiToken()`. The returned value is the unencrypted API token. The members `ApiToken` field will be the encrypted API token.
-1. Call `$member->write()`
+Programmatically update a users API token with `$member->refreshApiToken();` followed by `$member->write();`. The returned value is the unencrypted API token. The members `ApiToken` field will be the encrypted API token.
+
+Note that for newly created users, `$member->write()` must be called at least once before calling `$member->refreshApiToken();` to ensure that the API token is properly encrypted.
 
 ## Extension hooks<a name="readme-extension-hooks"></a>
 

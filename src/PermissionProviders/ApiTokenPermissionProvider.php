@@ -3,15 +3,16 @@
 namespace emteknetnz\RestApi\PermissionProviders;
 
 use SilverStripe\Security\PermissionProvider;
+use emteknetnz\RestApi\Controllers\RestApiEndpoint;
 
+// This exists as a standalone class rather than simply putting it on RestApiEndpoint because that is an abstract
+// class which cannot be instantiated and therefore cannot be used as a permission provider.
 class ApiTokenPermissionProvider implements PermissionProvider
 {
-    public const API_TOKEN_AUTHENTICATION = 'API_TOKEN_AUTHENTICATION';
-
     public function providePermissions()
     {
         return [
-            self::API_TOKEN_AUTHENTICATION => 'Use an API token',
+            RestApiEndpoint::API_TOKEN_AUTHENTICATION => 'Use an API token',
         ];
     }
 }

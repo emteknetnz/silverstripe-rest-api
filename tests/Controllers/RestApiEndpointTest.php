@@ -18,7 +18,6 @@ use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestCanMethodStatic;
 use emteknetnz\RestApi\Exceptions\RestApiEndpointConfigException;
 use SilverStripe\Security\SecurityToken;
 use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestVersionedExtension;
-use emteknetnz\RestApi\PermissionProviders\ApiTokenPermissionProvider;
 use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Permission;
@@ -58,6 +57,8 @@ class RestApiEndpointTest extends FunctionalTest
     public const DELIMITER = '_';
     public const CREATE_EDIT_DELETE_ACTION = 'CREATE_EDIT_DELETE_ACTION';
     public const VIEW_CREATE_EDIT_DELETE_ACTION = 'VIEW_CREATE_EDIT_DELETE_ACTION';
+    // permissions
+    public const API_TOKEN_AUTHENTICATION = 'API_TOKEN_AUTHENTICATION';
     // other consts
     public const CSRF_TOKEN_HEADER = 'x-csrf-token';
     public const API_TOKEN_HEADER = 'x-api-token';
@@ -372,7 +373,7 @@ class RestApiEndpointTest extends FunctionalTest
     public function testApiTokenAuthentication(bool $allowApiToken, int $expectedStatusCode)
     {
         $this->setConfig(self::ALLOW_API_TOKEN, $allowApiToken);
-        $code = ApiTokenPermissionProvider::API_TOKEN_AUTHENTICATION;
+        $code = self::API_TOKEN_AUTHENTICATION;
         // update config to use api token authentication
         $this->setConfig(self::ACCESS, $code);
         // create a group + member
