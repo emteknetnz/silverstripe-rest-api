@@ -1326,7 +1326,7 @@ class RestApiEndpointTest extends FunctionalTest
         $newID = $maxID + 1;
         $expectedLocationHeader = null;
         if ($expectedStatusCode === 201) {
-            $expectedTaskJson['dataObjectMethod'] = "TestTask 00 DataObjectMethod"; // @todo
+            $expectedTaskJson['dataObjectMethod'] = "TestTask 00 DataObjectMethod";
             $expectedTaskJson = array_merge($expectedTaskJson, $data ?? []);
             $str = '<TestProject.First.ID>';
             if ($data['testProject__ID'] ?? '' === $str) {
@@ -2520,7 +2520,7 @@ class RestApiEndpointTest extends FunctionalTest
                 'myVarchar' => 'Lorem ipsum',
                 'myYear' => 1989,
                 // standard title field
-                'title' => 'TestTeam 01 Title', // @todo is this right?
+                'title' => 'TestTeam 01 Title',
             ],
             'title' => "TestProject $projectIden Title",
         ];

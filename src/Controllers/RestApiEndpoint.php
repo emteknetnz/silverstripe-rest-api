@@ -2,7 +2,6 @@
 
 namespace emteknetnz\RestApi\Controllers;
 
-use App\Endpoints\PrivateTaskEndpoint;
 use emteknetnz\RestApi\Exceptions\RestApiEndpointException;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPResponse;
