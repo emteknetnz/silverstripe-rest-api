@@ -132,7 +132,10 @@ abstract class RestApiEndpoint extends Controller
      */
     private function authenticateWithApiToken(): void
     {
-        // TODO - check api_config if allowed to use api token authentication
+        $allowApiToken = $this->endpointConfig(self::ALLOW_API_TOKEN, false);
+        if (!$allowApiToken) {
+            return;
+        }
         $request = $this->getRequest();
         $apiToken = $request->getHeader(self::API_TOKEN_HEADER);
         if ($apiToken) {
@@ -180,6 +183,9 @@ abstract class RestApiEndpoint extends Controller
             switch($key) {
                 case self::ACCESS:
                     $value = self::LOGGED_IN;
+                    break;
+                case self::ALLOW_API_TOKEN:
+                    $value = false;
                     break;
                 case self::ALLOWED_OPERATIONS:
                     $value = self::VIEW;

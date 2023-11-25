@@ -18,6 +18,10 @@ use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestCanMethodStatic;
 use emteknetnz\RestApi\Exceptions\RestApiEndpointConfigException;
 use SilverStripe\Security\SecurityToken;
 use emteknetnz\RestApi\Tests\Controllers\RestApiTest\TestVersionedExtension;
+use emteknetnz\RestApi\PermissionProviders\ApiTokenPermissionProvider;
+use SilverStripe\Security\Group;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
 
 
 # vendor/bin/phpunit app/tests/Controllers/RestApiTest.php flush=1
@@ -56,6 +60,7 @@ class RestApiEndpointTest extends FunctionalTest
     public const VIEW_CREATE_EDIT_DELETE_ACTION = 'VIEW_CREATE_EDIT_DELETE_ACTION';
     // other consts
     public const CSRF_TOKEN_HEADER = 'x-csrf-token';
+    public const API_TOKEN_HEADER = 'x-api-token';
 
     // This is from TestApiEndpoint
     private const TEST_API_ACCESS = 'TEST_API_ACCESS';
@@ -357,6 +362,49 @@ class RestApiEndpointTest extends FunctionalTest
                 'access' => self::TEST_API_ACCESS,
                 'csrfTokenType' => 'missing',
                 'expectedStatusCode' => 400,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideApiToken
+     */
+    public function testApiTokenAuthentication(bool $allowApiToken, int $expectedStatusCode)
+    {
+        $this->setConfig(self::ALLOW_API_TOKEN, $allowApiToken);
+        $code = ApiTokenPermissionProvider::API_TOKEN_AUTHENTICATION;
+        // update config to use api token authentication
+        $this->setConfig(self::ACCESS, $code);
+        // create a group + member
+        $group = Group::create();
+        $group->write();
+        $permission = Permission::create(['Code' => $code]);
+        $permission->write();
+        $group->Permissions()->add($permission);
+        $member = Member::create(['Email' => 'test-api-user']);
+        $member->write();
+        $member->Groups()->add($group);
+        // create member api token
+        $token = $member->refreshApiToken();
+        $member->write();
+        // make request without token header
+        $response = $this->req('GET');
+        $this->assertSame(401, $response->getStatusCode());
+        // make request with token header
+        $response = $this->req('GET', null, null, null, null, null, 'none', $token);
+        $this->assertSame($expectedStatusCode, $response->getStatusCode());
+    }
+
+    public function provideApiToken(): array
+    {
+        return [
+            [
+                'allowApiAccess' => false,
+                'expectedStatusCode' => 401,
+            ],
+            [
+                'allowApiAccess' => true,
+                'expectedStatusCode' => 200,
             ],
         ];
     }
@@ -904,7 +952,7 @@ class RestApiEndpointTest extends FunctionalTest
             ],
             'single with relation ID' => [
                 'filter' => [
-                    'testProject__ID' => '<TestProject.First.ID>', // sboyd
+                    'testProject__ID' => '<TestProject.First.ID>',
                 ],
                 'expectedStatusCode' => 200,
                 'expectedJson' => [
@@ -2387,7 +2435,8 @@ class RestApiEndpointTest extends FunctionalTest
         string $qs = null,
         ?array $dataForBody = null,
         ?string $rawBody = '',
-        string $csrfTokenType = 'valid'
+        string $csrfTokenType = 'valid',
+        string $apiToken = ''
     ): HTTPResponse {
         $url = $this->endpointPath;
         if ($id) {
@@ -2406,9 +2455,12 @@ class RestApiEndpointTest extends FunctionalTest
         }
         $headers = [];
         if ($csrfTokenType === 'valid') {
-            $headers['x-csrf-token'] = SecurityToken::getSecurityID();
+            $headers[self::CSRF_TOKEN_HEADER] = SecurityToken::getSecurityID();
         } elseif ($csrfTokenType === 'invalid') {
-            $headers['x-csrf-token'] = 'nonsense';
+            $headers[self::CSRF_TOKEN_HEADER] = 'nonsense';
+        }
+        if ($apiToken) {
+            $headers[self::API_TOKEN_HEADER] = $apiToken;
         }
         return $this->mainSession->sendRequest($method, $url, [], $headers, null, $body);
     }

@@ -20,6 +20,7 @@ class ApiTokenMemberExtension extends Extension
 
     /**
      * Sets the ApiToken field to a new randomly generated API token
+     * Note this must be called after at least one $member->write() so that encryption user settings are available
      *
      * @return string The unencrypted API token
      */
