@@ -467,7 +467,7 @@ Notes:
 | `onBeforeApi()` | Called during all requests before any processing |
 | `onAfterApi()` | Called during all requests after any processing |
 | `onViewOne(DataObject $obj)` | Called during `GET` requests to view a single record before rendering JSON for response |
-| `onViewMany(array $objs)` | Called during `GET` requests to view many records before rendering JSON for response |
+| `onViewMany(DataList $objs)` | Called during `GET` requests to view many records before rendering JSON for response |
 | `onCreateBeforeWrite(DataObject $obj)` | Called during `POST` requests before calling `$obj->write()` |
 | `onCreateAfterWrite(DataObject $obj)` | Called during `POST` requests after calling `$obj->write()` |
 | `onEditBeforeWrite(DataObject $obj, array $changedFields)` | Called during `PATCH` requests before calling `$obj->write()` |
