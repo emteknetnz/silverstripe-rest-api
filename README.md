@@ -387,7 +387,7 @@ Non-public API's can be configured to allow members to authenticate using an HTT
 
 If API authentication is used, the user will be logged in only for the duration of the request i.e. they will be logged out before the JSON response is returned.
 
-This module provides a permission "Use an API token" which is `API_TOKEN_AUTHENTICATION` which must be assigned to a group that users using API tokens must belong to. The endpoints `ALLOW_API_ACCESS` config must be set to `true`.
+This module provides a permission "Use an API token" which is `API_TOKEN_AUTHENTICATION` which must be assigned to a group that users using API tokens must belong to. The endpoints `ALLOW_API_TOKEN` config must be set to `true`.
 
 When a user and endpoint is set up to allow using an API token, pass an `x-api-token` header with the value of the API Token to authenticate. Note that API token authentication will bypass MFA if it was set up for that user.
 
